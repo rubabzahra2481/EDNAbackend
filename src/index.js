@@ -42,6 +42,8 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:8080',
   'https://main.d4edpf6ads6l4.amplifyapp.com',
+  'https://brandscaling.co.uk',
+  'https://www.brandscaling.co.uk',
   process.env.FRONTEND_URL
 ].filter(Boolean); // Remove undefined values
 
