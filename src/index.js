@@ -175,7 +175,7 @@ app.post('/api/quiz/generate-pdf', async (req, res) => {
     // Use local development URL if NODE_ENV is not production
     const isDevelopment = process.env.NODE_ENV !== 'production';
     const frontendUrl = isDevelopment 
-      ? 'http://localhost:3001' 
+      ? 'http://localhost:3000' 
       : (process.env.FRONTEND_URL || 'https://brandscaling.co.uk');
     const pdfResult = await generatePDFFromComponent({ ...results, name }, pdfPath, frontendUrl);
     if (!pdfResult.success) {
@@ -477,7 +477,7 @@ async function generatePDFInBackground(email, name, results, resultId) {
     // Use local development URL if NODE_ENV is not production
     const isDevelopment = process.env.NODE_ENV !== 'production';
     const frontendUrl = isDevelopment 
-      ? 'http://localhost:3001' 
+      ? 'http://localhost:3000' 
       : (process.env.FRONTEND_URL || 'https://brandscaling.co.uk');
     const pdfResult = await generatePDFFromComponent({ ...results, name }, pdfPath, frontendUrl);
 
@@ -2284,7 +2284,7 @@ app.post('/api/quiz/download-pdf', async (req, res) => {
     // Use local development URL if NODE_ENV is not production
     const isDevelopment = process.env.NODE_ENV !== 'production';
     const frontendUrl = isDevelopment 
-      ? 'http://localhost:3001' 
+      ? 'http://localhost:3000' 
       : (process.env.FRONTEND_URL || 'https://brandscaling.co.uk');
     const pdfResult = await generatePDFFromComponent({ ...results, name }, pdfPath, frontendUrl);
     
@@ -2307,21 +2307,26 @@ app.post('/api/quiz/download-pdf', async (req, res) => {
     const fileStream = fs.createReadStream(pdfPath);
     fileStream.pipe(res);
     
-    // Clean up temp file after sending
-    fileStream.on('end', () => {
+    // Clean up temp file after response is finished
+    res.on('finish', () => {
       setTimeout(() => {
         if (fs.existsSync(pdfPath)) {
           fs.unlinkSync(pdfPath);
-          console.log('🗑️ Temp PDF file deleted');
+          console.log('🗑️ Temp PDF file deleted after successful download');
         }
-      }, 1000);
+      }, 2000); // Increased delay to ensure download completes
     });
     
     fileStream.on('error', (error) => {
       console.error('❌ Error streaming PDF:', error);
       // Clean up on error
       if (pdfPath && fs.existsSync(pdfPath)) {
-        fs.unlinkSync(pdfPath);
+        try {
+          fs.unlinkSync(pdfPath);
+          console.log('🗑️ Temp PDF file deleted after error');
+        } catch (unlinkError) {
+          console.error('Failed to delete temp file:', unlinkError);
+        }
       }
       if (!res.headersSent) {
         res.status(500).json({
