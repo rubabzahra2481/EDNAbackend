@@ -172,7 +172,11 @@ app.post('/api/quiz/generate-pdf', async (req, res) => {
     const pdfFileName = `edna-results-${resultId}.pdf`;
     const pdfPath = path.join(tempDir, pdfFileName);
 
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    // Use local development URL if NODE_ENV is not production
+    const isDevelopment = process.env.NODE_ENV !== 'production';
+    const frontendUrl = isDevelopment 
+      ? 'http://localhost:3001' 
+      : (process.env.FRONTEND_URL || 'https://brandscaling.co.uk');
     const pdfResult = await generatePDFFromComponent({ ...results, name }, pdfPath, frontendUrl);
     if (!pdfResult.success) {
       throw new Error(`PDF generation failed: ${pdfResult.error}`);
@@ -470,7 +474,11 @@ async function generatePDFInBackground(email, name, results, resultId) {
     const pdfFileName = `edna-results-${resultId}.pdf`;
     const pdfPath = path.join(tempDir, pdfFileName);
 
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    // Use local development URL if NODE_ENV is not production
+    const isDevelopment = process.env.NODE_ENV !== 'production';
+    const frontendUrl = isDevelopment 
+      ? 'http://localhost:3001' 
+      : (process.env.FRONTEND_URL || 'https://brandscaling.co.uk');
     const pdfResult = await generatePDFFromComponent({ ...results, name }, pdfPath, frontendUrl);
 
     if (!pdfResult.success) {
@@ -2273,7 +2281,11 @@ app.post('/api/quiz/download-pdf', async (req, res) => {
     const pdfFileName = `edna-results-${resultId}.pdf`;
     pdfPath = path.join(tempDir, pdfFileName);
     
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    // Use local development URL if NODE_ENV is not production
+    const isDevelopment = process.env.NODE_ENV !== 'production';
+    const frontendUrl = isDevelopment 
+      ? 'http://localhost:3001' 
+      : (process.env.FRONTEND_URL || 'https://brandscaling.co.uk');
     const pdfResult = await generatePDFFromComponent({ ...results, name }, pdfPath, frontendUrl);
     
     if (!pdfResult.success) {
@@ -2430,3 +2442,4 @@ async function startServer() {
 startServer();
 
 export default app;
+

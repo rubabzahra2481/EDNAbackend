@@ -4,7 +4,7 @@ import puppeteer from 'puppeteer';
  * Generate PDF from the actual EDNAResultsPage React component
  * This visits the frontend URL and captures the rendered component as PDF
  */
-export async function generatePDFFromComponent(results, outputPath, frontendUrl = 'http://localhost:3000') {
+export async function generatePDFFromComponent(results, outputPath, frontendUrl = 'http://localhost:3001') {
   let browser;
 
   try {
